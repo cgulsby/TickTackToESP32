@@ -2,14 +2,14 @@
 
 char board[3][3];
 const char PLAYER_ONE = 'X';
-const char PLAYER_TWO = 'Y';
+const char PLAYER_TWO = 'O';
 
 void print_board();
 void reset_board();
 int check_free_spaces();
 void player_one_move();
 void player_two_move();
-void check_winner();
+char check_winner();
 void print_winner(char);
 
 int main() {
@@ -28,17 +28,31 @@ int main() {
   printf("| Select Row, Column for your move         |\n");
   printf("+------------------------------------------+\n");
   printf("\n\n");
+  char winner = ' ';
 
   reset_board();
 
-  // get player one move
-  player_one_move();
-  // get player two move
-  player_two_move();
-  // is there a winner?
-  check_winner();
-  // No
-  // yes
+  while (winner == ' ' && check_free_spaces() != 0) {
+    print_board();
+
+    player_one_move();
+    winner = check_winner();
+    if (winner != ' ' || check_free_spaces() == 0) {
+      break;
+    }
+
+    printf("\n\n");
+    print_board();
+
+    player_two_move();
+    winner = check_winner();
+    if (winner != ' ' || check_free_spaces() == 0) {
+      break;
+    }
+  }
+
+  print_board();
+  print_winner(winner);
 
   return 0;
 }
@@ -82,6 +96,7 @@ void player_one_move() {
 
   do {
     printf("\n\n");
+    printf("Player 1: \n");
     printf("Enter row: ");
     scanf(" %d", &x);
     x--;
@@ -92,9 +107,10 @@ void player_one_move() {
       printf("Invalid move, try again\n\n");
     } else {
       board[x][y] = PLAYER_ONE;
+      break;
     }
 
-  } while (board[x][y] != ' ');
+  } while (board[x][y] == ' ');
 }
 
 void player_two_move() {
@@ -103,6 +119,7 @@ void player_two_move() {
 
   do {
     printf("\n\n");
+    printf("Player 2: \n");
     printf("Enter row: ");
     scanf(" %d", &x);
     x--;
@@ -113,32 +130,33 @@ void player_two_move() {
       printf("Invalid move, try again\n\n");
     } else {
       board[x][y] = PLAYER_TWO;
+      break;
     }
 
-  } while (board[x][y] != ' ');
+  } while (board[x][y] == ' ');
 }
 
-void check_winner() {
+char check_winner() {
   // check rows
   for (int i = 0; i < 3; i++) {
-    if (board[i][0] == board[i][1] == board[i][2]) {
-      // return winner
+    if (board[i][0] == board[i][1] && board[i][0] == board[i][2]) {
+      return board[i][0];
     }
   }
   // check columns
   for (int i = 0; i < 3; i++) {
-    if (board[0][i] == board[1][i] == board[2][i]) {
-      // return winner
+    if (board[0][i] == board[1][i] && board[0][i] == board[2][i]) {
+      return board[0][i];
     }
   }
   // check diagonals
-  if (board[0][0] == board[1][1] == board[2][2]) {
-    // return winner
+  if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
+    return board[0][0];
   }
-  if (board[0][2] == board[1][1] == board[2][0]) {
-    // return winner
+  if (board[0][2] == board[1][1] && board[0][2] == board[2][0]) {
+    return board[0][2];
   }
-  // return no winner
+  return ' ';
 }
 
 void print_winner(char winner) {
